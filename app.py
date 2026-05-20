@@ -61,8 +61,7 @@ if submitted:
     st.markdown(risks)
     
     # B. Audit Trail (Save to Supabase)
-     try:
-        # We explicitly grab the authenticated user's ID
+    try:
         current_user_id = st.session_state.user.id 
         
         supabase.table("assessments").insert({
