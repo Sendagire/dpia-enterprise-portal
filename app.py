@@ -61,15 +61,19 @@ if submitted:
     st.markdown(risks)
     
     # B. Audit Trail (Save to Supabase)
-    try:
+     try:
+        # We explicitly grab the authenticated user's ID
+        current_user_id = st.session_state.user.id 
+        
         supabase.table("assessments").insert({
-            "user_id": st.session_state.user.id,
+            "user_id": current_user_id, # Ensure this matches the auth.uid()
             "project_name": p_name,
             "risks_output": risks,
             "created_at": str(datetime.datetime.now())
         }).execute()
+        st.success("Assessment saved to database!")
     except Exception as e:
-        st.warning("Audit trail could not be saved: " + str(e))
+        st.error(f"Audit trail could not be saved: {e}")
     
     # C. Generate Word Document
     doc = Document()
