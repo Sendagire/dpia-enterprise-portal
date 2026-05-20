@@ -9,7 +9,7 @@ st.set_page_config(page_title="DPIA Enterprise", layout="wide")
 
 # Configure Gemini
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-3.1-flash-lite')
 
 # Configure Supabase
 supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_SERVICE_KEY"])
