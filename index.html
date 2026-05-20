@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPIA Enterprise | Global Privacy Compliance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background-color: #f0f2f5; font-family: system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; min-h-screen; }
+        .fb-card { background-color: #ffffff; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
+        .btn-primary { background-color: #0866ff; color: white; font-weight: bold; transition: 0.2s; border-radius: 6px; }
+        .btn-primary:hover { background-color: #1877f2; }
+        .btn-secondary { background-color: #42b72a; color: white; font-weight: bold; border-radius: 6px; }
+        .btn-secondary:hover { background-color: #36a420; }
+        .hidden { display: none !important; }
+        input, select, textarea { background-color: #f5f6f7; border: 1px solid #dddfe2; padding: 10px; border-radius: 6px; outline: none; width: 100%; font-size: 14px; }
+        input:focus, textarea:focus { border-color: #0866ff; background-color: white; }
+        .sub-header { font-size: 13px; font-weight: 800; color: #0866ff; border-bottom: 2px solid #f0f2f5; padding-bottom: 4px; margin-top: 20px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #65676b; margin-bottom: 4px; display: block; }
+        .tab-item { cursor: pointer; padding: 4px 12px; border-radius: 6px; font-weight: bold; color: #1c1e21; transition: 0.2s; }
+        .tab-item.active { color: #0866ff; background-color: #e7f3ff; }
+        .legal-text h2 { font-weight: bold; margin-top: 20px; margin-bottom: 10px; color: #1c1e21; }
+        .legal-text p { margin-bottom: 15px; color: #4b5563; line-height: 1.6; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- TOP HEADER -->
+    <header class="bg-white border-b border-gray-200 py-3 px-10">
+        <div class="max-w-6xl mx-auto flex items-center gap-2">
+            <div class="bg-blue-600 text-white p-1.5 rounded-lg font-bold text-lg">D</div>
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">DPIA <span class="text-gray-800 font-bold">Enterprise</span></h1>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- 1. LANDING PAGE (AUTHENTICATION) -->
+        <div id="auth-screen" class="max-w-7xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-2 gap-20 py-20 items-center">
+            <div class="flex flex-col justify-center text-left">
+                <h2 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-[1.1] mb-6">
+                    Automating Privacy Compliance for <span class="text-blue-600">Global Enterprise.</span>
+                </h2>
+                <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+                    We empower organizations <strong>worldwide</strong> to navigate the complexities of 
+                    <strong>International Data Protection Laws</strong>. Our AI-driven engine generates 
+                    legally sound DPIAs in seconds.
+                </p>
+                <div class="grid grid-cols-2 gap-8">
+                    <div><h4 class="font-bold text-gray-900 mb-1 text-base">Global Expertise</h4><p class="text-sm text-gray-500">Built for international privacy frameworks.</p></div>
+                    <div><h4 class="font-bold text-gray-900 mb-1 text-base">Enterprise Ready</h4><p class="text-sm text-gray-500">Secure, encrypted, and trusted.</p></div>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center">
+                <div class="fb-card p-10 w-full max-w-[420px]">
+                    <h3 class="text-xl font-bold mb-6 text-center text-gray-800">Sign in to your Portal</h3>
+                    <input type="email" id="email" placeholder="Email address" class="w-full mb-3">
+                    <input type="password" id="password" placeholder="Password" class="w-full mb-4">
+                    <button onclick="window.logIn()" class="btn-primary w-full py-3 text-lg mb-4">Log In</button>
+                    <div class="flex items-center my-4"><div class="flex-grow border-t border-gray-200"></div><span class="px-3 text-gray-400 text-xs font-bold uppercase">or</span><div class="flex-grow border-t border-gray-200"></div></div>
+                    <button onclick="window.signUp()" class="btn-secondary w-full py-3 text-lg">Register Account</button>
+                    <p id="auth-msg" class="text-center font-bold mt-6 text-sm"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DASHBOARD -->
+        <div id="app-screen" class="hidden p-4 md:p-8">
+            <div class="max-w-5xl mx-auto text-left">
+                <div class="flex justify-between items-center fb-card p-4 mb-6">
+                    <div class="flex items-center gap-2">
+                        <div onclick="window.showView('new')" id="nav-new" class="tab-item active">New Assessment</div>
+                        <div onclick="window.showView('history')" id="nav-history" class="tab-item">History</div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span id="display-user" class="text-gray-600 font-bold text-sm"></span>
+                        <button onclick="window.logOut()" class="text-red-500 font-bold hover:underline text-sm">Log Out</button>
+                    </div>
+                </div>
+
+                <div id="view-new">
+                    <div class="fb-card p-8 mb-8">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">📝 Phase 1: Project Audit Details</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
+                            <div class="md:col-span-2"><div class="sub-header">I. Context & Lawfulness</div></div>
+                            <div><label>Project Name</label><input type="text" id="p_name" placeholder="e.g. car tracker"></div>
+                            <div><label>Geographic Scope</label><input type="text" id="p_geo" placeholder="e.g. kenya, usa"></div>
+                            <div><label>Lawful Basis</label><select id="p_basis"><option>Consent</option><option>Contract</option><option>Legal Obligation</option><option>Legitimate Interests</option></select></div>
+                            <div><label>Initial Risk Profile</label><select id="p_risk"><option>Low Risk</option><option selected>Medium Risk</option><option>High Risk</option></select></div>
+                            <div class="md:col-span-2"><div class="sub-header">II. Subjects & Collection</div></div>
+                            <div><label>Data Subjects</label><input type="text" id="p_subjects" placeholder="e.g. Employees, Customers"></div>
+                            <div><label>Collection Source</label><input type="text" id="p_source" placeholder="Direct or Third Party?"></div>
+                            <div class="md:col-span-2"><label>Purpose Assessment (Processing Nature)</label><textarea id="p_desc" rows="2" placeholder="Define why the data is used and if secondary uses exist..."></textarea></div>
+                            <div class="md:col-span-2"><div class="sub-header">III. Data Governance & Transparency</div></div>
+                            <div><label>Data Points Collected</label><textarea id="p_data" rows="2" placeholder="List all personal data fields..."></textarea></div>
+                            <div><label>Data Minimization</label><textarea id="p_minimization" rows="2" placeholder="How is collection limited to necessity?"></textarea></div>
+                            <div><label>Transparency Measures</label><textarea id="p_transparency" rows="2" placeholder="How are purposes made known to subjects?"></textarea></div>
+                            <div><label>Data Quality & Accuracy</label><textarea id="p_quality" rows="2" placeholder="Ensuring data is correct and complete..."></textarea></div>
+                            <div class="md:col-span-2"><div class="sub-header">IV. Security, Transfers & Rights</div></div>
+                            <div><label>Security Measures</label><textarea id="p_security" rows="2" placeholder="Reasonable technical safeguards in place..."></textarea></div>
+                            <div><label>Third-Party Sharing</label><textarea id="p_third" rows="2" placeholder="e.g. Cloud storage, sub-processors..."></textarea></div>
+                            <div><label>International Transfers</label><textarea id="p_intl" rows="2" placeholder="Safeguards for cross-border data movement..."></textarea></div>
+                            <div><label>Retention Period & Policy</label><input type="text" id="p_retention" placeholder="e.g. 10 years per policy"></div>
+                            <div class="md:col-span-2"><label>Individual Rights Fulfillment</label><textarea id="p_rights" rows="2" placeholder="Process for Access, Erasure, and Correction requests..."></textarea></div>
+                        </div>
+                        <!-- BUTTON IS DISABLED BY DEFAULT BY THE BOUNCER UNLESS PAID -->
+                        <button id="btnAnalyze" onclick="window.analyzeRisks()" class="btn-primary w-full py-4 mt-10 text-xl shadow-lg">🔍 Analyze Privacy Risks</button>
+                    </div>
+                    <div class="fb-card p-8">
+                        <h2 class="text-2xl font-bold mb-4 border-b pb-3 text-red-700">⚠️ Phase 2: Risk Assessment Findings</h2>
+                        <textarea id="out_risks" rows="15" class="w-full p-5 border rounded bg-gray-50 font-mono text-sm mb-6" readonly placeholder="Waiting for analysis..."></textarea>
+                        <button id="btnGenerate" onclick="window.generateReport()" class="btn-secondary w-full py-5 text-xl hidden shadow-lg">📄 Generate Final Word Report</button>
+                        <p id="statusBox" class="text-center font-bold text-blue-600 mt-4"></p>
+                    </div>
+                </div>
+                <div id="view-history" class="hidden">
+                    <div class="fb-card p-8"><h2 class="text-2xl font-bold mb-6 text-gray-800">Your Assessment History</h2><div id="history-list" class="flex flex-col gap-4 text-left"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PRIVACY POLICY PAGE -->
+        <div id="view-privacy" class="hidden p-8 max-w-4xl mx-auto">
+            <div class="fb-card p-10 legal-text">
+                <button onclick="window.showView('auth')" class="text-blue-600 font-bold mb-6 hover:underline">← Back to Home</button>
+                <h1 class="text-3xl font-bold text-gray-900 border-b pb-4">Privacy Policy</h1>
+                <h2>1. Data Collection</h2>
+                <p>We collect your email address strictly for authentication purposes to allow you to securely store and retrieve your assessments. We do not sell or trade your personal information.</p>
+                <h2>2. Processing of Assessment Data</h2>
+                <p>The data you enter into the DPIA form is processed by automated AI systems to generate compliance reports. This data is stored securely in our encrypted database provided by Supabase. You maintain full ownership of your data.</p>
+                <h2>3. Security</h2>
+                <p>We implement enterprise-grade technical and organizational measures to ensure the security of your account and your assessments. This includes encryption of data at rest and in transit.</p>
+                <h2>4. International Transfers</h2>
+                <p>Your data may be processed on servers located globally to provide high-speed service. By using the platform, you consent to these secure transfers.</p>
+            </div>
+        </div>
+
+        <!-- 4. TERMS OF SERVICE PAGE -->
+        <div id="view-terms" class="hidden p-8 max-w-4xl mx-auto">
+            <div class="fb-card p-10 legal-text">
+                <button onclick="window.showView('auth')" class="text-blue-600 font-bold mb-6 hover:underline">← Back to Home</button>
+                <h1 class="text-3xl font-bold text-gray-900 border-b pb-4">Terms of Service</h1>
+                <h2>1. Acceptance of Terms</h2>
+                <p>By accessing DPIA Enterprise, you agree to be bound by these global terms of service and all applicable laws and regulations.</p>
+                <h2>2. Legal Disclaimer</h2>
+                <p><strong>IMPORTANT:</strong> DPIA Enterprise is an AI-driven compliance support tool. The reports generated are based on information provided by the user and automated legal analysis. They do not constitute official legal advice. Users are strongly advised to have all final reports reviewed by a qualified legal professional before submission to regulators.</p>
+                <h2>3. User Licenses</h2>
+                <p>Annual licenses are granted to individual organizations. Sharing of account credentials across multiple organizations is strictly prohibited.</p>
+                <h2>4. Limitation of Liability</h2>
+                <p>DPIA Enterprise shall not be held liable for any regulatory fines or legal actions resulting from the use of its generated reports. The tool is designed to assist, not replace, a comprehensive legal review.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER (VISIBLE ON ALL PAGES) -->
+    <footer class="bg-white border-t border-gray-200 py-10 px-10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-gray-500 text-sm">© 2026 DPIA Enterprise. Global Data Protection Solutions.</div>
+            <div class="flex gap-6 text-gray-400 text-sm">
+                <a href="javascript:void(0)" onclick="window.showView('privacy')" class="hover:text-blue-600 transition">Privacy Policy</a>
+                <a href="javascript:void(0)" onclick="window.showView('terms')" class="hover:text-blue-600 transition">Terms of Service</a>
+                <a href="mailto:support@dpia-enterprise.com" class="hover:text-blue-600">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.onload = function() {
+            // 🚨 UPDATE KEYS HERE 🚨
+            const SUPABASE_URL = "https://yxnticwdgbnaairppyem.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4bnRpY3dkZ2JuYWFpcnBweWVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMDY3NTYsImV4cCI6MjA4OTU4Mjc1Nn0.WRhG1JE6EXm1u3ZWqkdE93PX4-3tcAfE4IHX6MGcXes";
+            const API_BASE_URL = "https://dpia-backend.onrender.com";
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            let activeUser = null;
+
+            window.signUp = async () => {
+                const { error } = await supabase.auth.signUp({ email: email.value, password: password.value });
+                document.getElementById('auth-msg').innerText = error ? "❌ " + error.message : "✅ Account created! Log in now.";
+                document.getElementById('auth-msg').style.color = error ? "red" : "green";
+            };
+            window.logIn = async () => {
+                const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: password.value });
+                if (error) document.getElementById('auth-msg').innerText = "❌ " + error.message;
+            };
+            
+            // LOGOUT REFRESHES PAGE TO CLEAR SESSION COMPLETELY
+            window.logOut = async () => { await supabase.auth.signOut(); window.location.reload(); };
+
+            // THE BOUNCER & LICENSE CHECKER
+            supabase.auth.onAuthStateChange(async (event, session) => {
+                const authScreen = document.getElementById('auth-screen');
+                const appScreen = document.getElementById('app-screen');
+                const analyzeBtn = document.getElementById('btnAnalyze');
+                const statusBox = document.getElementById('statusBox');
+
+                if (session) {
+                    activeUser = session.user;
+                    authScreen.classList.add('hidden');
+                    appScreen.classList.remove('hidden');
+                    document.getElementById('display-user').innerText = session.user.email;
+
+                    // READ THE SECRET TAG (is_active)
+                    // We check session.user.app_metadata which is where our SQL puts the data
+                    const isPaid = session.user.app_metadata && session.user.app_metadata.is_active;
+
+                    if (isPaid === true) {
+                        // SUCCESS: User is approved
+                        analyzeBtn.disabled = false;
+                        analyzeBtn.innerText = "🔍 Analyze Privacy Risks";
+                        analyzeBtn.style.backgroundColor = "#0866ff";
+                        analyzeBtn.style.cursor = "pointer";
+                        statusBox.innerText = "";
+                    } else {
+                        // FAILURE: is_active is missing or false
+                        analyzeBtn.disabled = true;
+                        analyzeBtn.innerText = "🔒 Account Pending Activation";
+                        analyzeBtn.style.backgroundColor = "#9ca3af";
+                        analyzeBtn.style.cursor = "not-allowed";
+                        statusBox.innerHTML = `<span style="color:red">Your global license is inactive. Please contact support to activate your portal.</span>`;
+                    }
+                    window.showView('new');
+                } else {
+                    window.showView('auth');
+                }
+            });
+
+            window.showView = (v) => {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+                document.getElementById('view-privacy').classList.add('hidden');
+                document.getElementById('view-terms').classList.add('hidden');
+                document.getElementById('view-new').classList.add('hidden');
+                document.getElementById('view-history').classList.add('hidden');
+                
+                if (v === 'auth') document.getElementById('auth-screen').classList.remove('hidden');
+                if (v === 'privacy') document.getElementById('view-privacy').classList.remove('hidden');
+                if (v === 'terms') document.getElementById('view-terms').classList.remove('hidden');
+                if (v === 'new' || v === 'history') {
+                    document.getElementById('app-screen').classList.remove('hidden');
+                    document.getElementById('view-' + v).classList.remove('hidden');
+                    document.getElementById('nav-new').classList.toggle('active', v === 'new');
+                    document.getElementById('nav-history').classList.toggle('active', v === 'history');
+                    if (v === 'history') window.fetchHistory();
+                }
+            };
+
+            window.fetchHistory = async () => {
+                const { data, error } = await supabase.from('assessments').select('*').eq('user_id', activeUser.id).order('created_at', { ascending: false });
+                const list = document.getElementById('history-list');
+                if (error || !data.length) { list.innerHTML = "No assessments found."; return; }
+                list.innerHTML = data.map(item => `
+                    <div class="flex justify-between items-center p-4 border rounded hover:bg-slate-50 transition mb-2 text-left">
+                        <div><p class="font-bold text-lg">${item.project_name}</p><p class="text-xs text-slate-400">${new Date(item.created_at).toLocaleDateString()}</p></div>
+                        <!-- We pass the ID without quotes to handle numbers correctly -->
+                        <button onclick="window.loadAssessment(${item.id})" class="text-blue-600 font-bold hover:underline">View</button>
+                    </div>
+                `).join('');
+                window.currentHistoryData = data;
+            };
+
+            window.loadAssessment = (id) => {
+                // Use == to match number IDs to string IDs
+                const item = window.currentHistoryData.find(i => i.id == id);
+                if (!item) return;
+
+                // 1. Fill the Project Name and AI Output
+                document.getElementById('p_name').value = item.project_name || "";
+                document.getElementById('out_risks').value = item.risks_output || "";
+
+                // 2. Fill all the audit boxes from the 'full_data' column
+                if (item.full_data) {
+                    const fd = item.full_data;
+                    document.getElementById('p_geo').value = fd.geo_scope || "";
+                    document.getElementById('p_basis').value = fd.lawful_basis || "";
+                    document.getElementById('p_risk').value = fd.initial_risk || "Medium Risk";
+                    document.getElementById('p_subjects').value = fd.data_subjects || "";
+                    document.getElementById('p_source').value = fd.collection_source || "";
+                    document.getElementById('p_desc').value = fd.project_desc || "";
+                    document.getElementById('p_data').value = fd.data_collected || "";
+                    document.getElementById('p_minimization').value = fd.data_minimization || "";
+                    document.getElementById('p_transparency').value = fd.transparency_measures || "";
+                    document.getElementById('p_quality').value = fd.data_quality || "";
+                    document.getElementById('p_security').value = fd.security_measures || "";
+                    document.getElementById('p_third').value = fd.third_parties || "";
+                    document.getElementById('p_intl').value = fd.intl_transfers || "";
+                    document.getElementById('p_retention').value = fd.retention_period || "";
+                    document.getElementById('p_rights').value = fd.individual_rights || "";
+                }
+
+                // 3. Switch back to the New Assessment tab to show the data
+                window.showView('new');
+                
+                // 4. Show the Generate Report button
+                document.getElementById('btnGenerate').classList.remove('hidden');
+            };
+
+            window.analyzeRisks = async () => {
+                const btn = document.getElementById('btnAnalyze');
+                btn.disabled = true; btn.innerText = "⏳ Processing...";
+                const payload = {
+                    project_name: p_name.value, project_desc: p_desc.value, data_subjects: p_subjects.value,
+                    data_collected: p_data.value, retention_period: p_retention.value, third_parties: p_third.value,
+                    initial_risk: p_risk.value, license_key: "FREE", geo_scope: p_geo.value, lawful_basis: p_basis.value,
+                    collection_source: p_source.value, transparency_measures: p_transparency.value,
+                    data_minimization: p_minimization.value, data_quality: p_quality.value, security_measures: p_security.value,
+                    intl_transfers: p_intl.value, retention_policy: "N/A", individual_rights: p_rights.value
+                };
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/analyze`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    document.getElementById('out_risks').value = data.risks;
+                    document.getElementById('btnGenerate').classList.remove('hidden');
+                    await supabase.from('assessments').insert([{
+                        user_id: activeUser.id, project_name: p_name.value, risks_output: data.risks, full_data: payload, is_active: true
+                    }]);
+                } catch (e) { alert("Server Connection Error."); }
+                finally { btn.disabled = false; btn.innerText = "🔍 Analyze Privacy Risks"; }
+            };
+
+            window.generateReport = async () => {
+                const status = document.getElementById('statusBox');
+                status.innerText = "⏳ Generating Report...";
+                const payload = {
+                    project_name: p_name.value, project_desc: p_desc.value, data_subjects: p_subjects.value,
+                    data_collected: p_data.value, retention_period: p_retention.value, third_parties: p_third.value,
+                    initial_risk: p_risk.value, identified_risks: out_risks.value, license_key: "FREE", geo_scope: p_geo.value, 
+                    lawful_basis: p_basis.value, retention_policy: "N/A", individual_rights: p_rights.value,
+                    collection_source: p_source.value, transparency_measures: p_transparency.value,
+                    data_minimization: p_minimization.value, data_quality: p_quality.value, security_measures: p_security.value,
+                    intl_transfers: p_intl.value
+                };
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/generate-report`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                    });
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url;
+                    a.download = p_name.value.replace(/ /g, "_") + "_DPIA.docx";
+                    document.body.appendChild(a); a.click();
+                    status.innerText = "✅ Download Complete!";
+                } catch (e) { status.innerText = "❌ Download failed."; }
+            };
+        };
+    </script>
+</body>
+</html>
